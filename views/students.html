@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="https://unpkg.com/axios@0.2.1/dist/axios.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/vue"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="http://localhost:3989/student/css">
+    <title>Students</title>
+</head>
+<body>
+    <div id="Sal">
+        <br><br>
+        <div class="row">
+            <div class="col-sm-1"></div>
+            <div class="col-sm-8"><b>TYPE TO SEARCH </b></div>
+            <div class="col-sm-3"></div>
+            <div class="col-sm-1"></div>
+            <input type="text" id="border"  v-model="query" placeholder ="Enter Slot to Search" class="form-control col-sm-7" id="usr"></input></td>
+            <div class="col-sm-1"></div>
+        </div><br>
+            <table id='tblData'class="col-sm-10" >
+                <tr >
+                    <th v-for="i in head.length" style="color: white" >
+                        {{head[i-1]}}
+                        <b @click="sort(i)"><span :class="clicks%2==0 ? 'arrowasc' : 'arrowdsc'" id="arrow"></span></b></th>
+                </tr>
+                    <tr v-if="arr[i-1]['name'].toLowerCase().includes(query.toLowerCase())" v-for="i in arr.length" >
+                        <td v-for="j in 3">
+                            <span v-if="j==1"><input type="checkbox"></span>
+                            <span v-if='j==2' >{{arr[i-1]['name']}}</span>
+                            <span v-if='j==3'>{{arr[i-1]['slot']}}</span>
+                            
+                        </td>  
+                        
+                    </tr>
+                </table><br>
+
+                <div class="row"> 
+                    <div class="col-sm-1"></div>
+                    <div class="col-sm-2">Your Question   : </div>
+                    <textarea class="col-sm-6"   rows="5"></textarea>
+                    <div class="col-sm-1"></div>
+                    
+                  </div> 
+            
+            <button  @click="submit()"  class="btn btn-warning">Book Slot</button>
+            
+        </div>
+    </body>
+    <script>
+        const sal=new Vue({
+            el:"#Sal",
+            data:{
+                query:'',
+                arr:[],
+                length:0,
+                head:['select','name','slot'],
+                clicks:0,
+            },
+            created:function(){
+                this.load();
+            },
+            methods:{
+                load:function(){
+                    var app=this;
+                    axios.get('http://localhost:3989/student/info')
+                    .then(function(Response){
+                        app.arr=Response
+                        app.length=Response.length
+                        console.log(app.arr)
+                    
+                    })
+                },
+                submit(){
+                    //WRITE
+                  
+                }, sort(field){
+                    
+                    this.clicks++
+                    this.field=this.head[field-1]
+                    this.arr.sort(this.compare)
+                    if(this.clicks%2==0){
+                        this.arr.reverse(this.compare)
+                    }
+                },
+                compare (a, b) {
+                    if(this.field=='name'){
+                        var nameA = a[this.field]
+                        var nameB = b[this.field]
+                    }else{
+                        var nameA = parseInt(a[this.field])
+                        var nameB = parseInt(b[this.field])
+                    }   
+                    if (nameA < nameB) { return -1; }
+                    if (nameA > nameB) { return 1;}
+                    return 0;
+                }
+                
+                
+            }
+            
+        })
+        
+    </script>
+    
+    </html>
